@@ -1,0 +1,6 @@
+@DotNetAPI.DockerWithMSSQL_HostAddress = http://localhost:5194
+
+GET {{DotNetAPI.DockerWithMSSQL_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
