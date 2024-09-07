@@ -1,26 +1,24 @@
-# Use the .NET 8.0 SDK image for building the application
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
+EXPOSE 8080
 
-# Copy the project file and restore any dependencies
-COPY ["DotNetAPI.DockerWithMSSQL.csproj", "."]
-RUN dotnet restore "DotNetAPI.DockerWithMSSQL.csproj"
-
-# Copy the rest of the code and build the application
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["DotNetAPI.DockerWithMSSQL/DotNetAPI.DockerWithMSSQL.csproj", "DotNetAPI.DockerWithMSSQL/"]
+RUN dotnet restore "./DotNetAPI.DockerWithMSSQL/./DotNetAPI.DockerWithMSSQL.csproj"
 COPY . .
-RUN dotnet build "DotNetAPI.DockerWithMSSQL.csproj" -c Release -o /app/build
+WORKDIR "/src/DotNetAPI.DockerWithMSSQL"
+RUN dotnet build "./DotNetAPI.DockerWithMSSQL.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-# Publish the application
 FROM build AS publish
-RUN dotnet publish "DotNetAPI.DockerWithMSSQL.csproj" -c Release -o /app/publish
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./DotNetAPI.DockerWithMSSQL.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Use the .NET 8.0 runtime image for running the application
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-
-# Expose the port the app runs on
-EXPOSE 80
-
-# Set the entry point for the application
 ENTRYPOINT ["dotnet", "DotNetAPI.DockerWithMSSQL.dll"]
