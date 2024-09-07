@@ -17,7 +17,7 @@ namespace DotNetAPI.DockerWithMSSQL.Data
 					{
 						databaseCreator.Create();
 					}
-					if (databaseCreator.HasTables())
+					if (!databaseCreator.HasTables())
 					{
 						databaseCreator.CreateTables();
 					}
