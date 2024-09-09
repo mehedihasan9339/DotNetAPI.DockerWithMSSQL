@@ -11,7 +11,7 @@ services:
         - 8002:1433
     environment:
         - ACCEPT_EULA=Y
-        - SA_PASSWORD=**OpUs246##
+        - SA_PASSWORD=sa@123456
     networks:
         - demowebapiapp
   dotnetapi.dockerwithmssql:
@@ -27,6 +27,6 @@ services:
     environment:
         - DB_HOST=demoappdb
         - DB_NAME=EmpDB
-        - DB_SA_PASSWORD=**OpUs246##
+        - DB_SA_PASSWORD=sa@123456
     networks:
         - demowebapiapp
